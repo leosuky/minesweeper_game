@@ -1,7 +1,7 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 
-import { Legend } from './Legend';
+import { Legend, LegendProps } from './Legend';
 
 
 export default {
@@ -9,6 +9,11 @@ export default {
   component: Legend,
 } as Meta;
 
-const Template: StoryFn = (args) => <Legend {...args} />;
+const Template: StoryFn<LegendProps> = (args) => <Legend {...args} />;
 
 export const GameLegend = Template.bind({})
+GameLegend.args = {
+  feature: 'Flag',
+  firstAction: 'ctrl',
+  secondAction: 'click',
+};
