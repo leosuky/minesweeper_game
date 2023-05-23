@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Cell component check Cell renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="css-2dncku"
+    data-testid="1,1"
+    role="cell"
+  >
+    <div
+      class="css-9d5cwe"
+      data-testid="weakFlag_1,1"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Cell component check closed frame renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="css-185g4a4"
+  />
+</DocumentFragment>
+`;

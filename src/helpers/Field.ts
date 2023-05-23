@@ -30,9 +30,6 @@ export const fieldGenerator = (size: number, probability: number): Field => {
 
     for (let i=0; i < size; i++) {
         for (let j=0; j < size; j++) {
-            if (cellsWIthBombs === 0) {
-                return result;
-            };
 
             if (cellsWIthBombs / unprocessedCells > Math.random()) {
                 result[i][j] = CellState.bomb;
