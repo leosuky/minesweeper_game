@@ -7,6 +7,10 @@ export interface LevelProps {
    */
   children: string[];
   /**
+   * Default value
+   */
+  value?: string;
+  /**
    * Select new lvl handler
    */
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;

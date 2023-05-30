@@ -12,7 +12,7 @@ export const CellState: Record<string, Cell> = {
     weakFlag: 12
 }
 
-export const emptyFieldGenerator = (
+export const generateFieldWithDefaultState = (
     size: number,
     state: Cell = CellState.empty
 ): Field => new Array(size).fill(null).map( () => new Array(size).fill(state));
@@ -26,7 +26,7 @@ export const fieldGenerator = (size: number, probability: number): Field => {
     let unprocessedCells = size * size;
     let cellsWIthBombs = unprocessedCells * probability;
 
-    const result: Field = emptyFieldGenerator(size);
+    const result: Field = generateFieldWithDefaultState(size);
 
     for (let i=0; i < size; i++) {
         for (let j=0; j < size; j++) {
