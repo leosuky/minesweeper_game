@@ -1,7 +1,10 @@
 import { CellState, Field } from "./Field";
-import { incrementNeigbors, getNeigboursItems, checkItemInField } from "./CellManipulator";
+import {
+  incrementNeigbors, getNeigboursItems,
+  checkItemInField, openCell
+} from "./CellManipulator";
 
-const { empty, bomb} = CellState;
+const { empty: e, hidden: h, bomb: b} = CellState;
 
 describe('Check neigbours selectors', () => {
   it('With [0, 0] coords', () => {
@@ -32,7 +35,7 @@ describe('Check neigbours selectors', () => {
 
 describe('checkiteminField tests', () => {
   describe("Simple Test Cases", () => {
-      const field: Field = [[empty]]
+      const field: Field = [[e]]
 
       it('Out of y range', () => {
         expect(checkItemInField([1, 0], field)).toBe(false);
@@ -49,11 +52,11 @@ describe('checkiteminField tests', () => {
 
   describe('Big field', () => {
     const field: Field = [
-      [empty, empty, empty, empty, empty],
-      [empty, empty, empty, empty, empty],
-      [empty, empty, empty, empty, empty],
-      [empty, empty, empty, empty, empty],
-      [empty, empty, empty, empty, empty],
+      [e, e, e, e, e],
+      [e, e, e, e, e],
+      [e, e, e, e, e],
+      [e, e, e, e, e],
+      [e, e, e, e, e],
     ];
 
     it('Out of x range', () => {
@@ -78,13 +81,13 @@ describe('checkiteminField tests', () => {
 describe('Check Increment Neighbors', () => {
     describe("Simple Test Cases", () => {
         it('Field with only one item', () => {
-            expect(incrementNeigbors([0,0], [[bomb]])).toStrictEqual([[bomb]])
+            expect(incrementNeigbors([0,0], [[b]])).toStrictEqual([[b]])
         });
         it('Field 2x2 with one mine', () => {
-            expect(incrementNeigbors([0,0], [[bomb, empty], [empty, empty]])).toStrictEqual([[bomb, 1], [1, 1]])
+            expect(incrementNeigbors([0,0], [[b, e], [e, e]])).toStrictEqual([[b, 1], [1, 1]])
         });
         it('Field 2x2 with two mines', () => {
-          expect(incrementNeigbors([0,0], [[bomb, empty], [empty, bomb]])).toStrictEqual([[bomb, 1], [1, bomb]])
+          expect(incrementNeigbors([0,0], [[b, e], [e, b]])).toStrictEqual([[b, 1], [1, b]])
       });
     });
 
@@ -94,14 +97,14 @@ describe('Check Increment Neighbors', () => {
           incrementNeigbors(
             [1, 1],
             [
-              [empty, empty, empty],
-              [empty, bomb, empty],
-              [empty, empty, empty],
+              [e, e, e],
+              [e, b, e],
+              [e, e, e],
             ]
           )
         ).toStrictEqual([
           [1, 1, 1],
-          [1, bomb, 1],
+          [1, b, 1],
           [1, 1, 1],
         ]);
       });
@@ -110,14 +113,14 @@ describe('Check Increment Neighbors', () => {
           incrementNeigbors(
             [1, 1],
             [
-              [0, 1, bomb],
-              [0, bomb, 1],
+              [0, 1, b],
+              [0, b, 1],
               [0, 0, 0],
             ]
           )
         ).toStrictEqual([
-          [1, 2, bomb],
-          [1, bomb, 2],
+          [1, 2, b],
+          [1, b, 2],
           [1, 1, 1],
         ]);
       });
@@ -182,3 +185,114 @@ describe('Check Increment Neighbors', () => {
       });
     });
 })
+
+
+describe('Open cell action', () => {
+  describe('Simple cases with loose', () => {
+    it('Open cell with the bomb', () => {
+      expect(() =>
+        openCell(
+          [1, 1],
+          [
+            [h, h],
+            [h, h],
+          ],
+          [
+            [1, 1],
+            [1, b],
+          ]
+        )
+      ).toThrow('Game Over');
+    });
+  });
+  describe('Open cell with number', () => {
+    it('Open cell with state == 1', () => {
+      const playerField = openCell(
+        [1, 1],
+        [
+          [h, h, h],
+          [h, h, h],
+          [h, h, h],
+        ],
+        [
+          [1, 1, 0],
+          [9, 1, 0],
+          [1, 1, 0],
+        ]
+      );
+      expect(playerField).toStrictEqual([
+        [h, h, h],
+        [h, 1, h],
+        [h, h, h],
+      ]);
+    });
+    it('Open cell with state == 3', () => {
+      const playerField = openCell(
+        [1, 1],
+        [
+          [h, h, h],
+          [h, h, h],
+          [h, h, h],
+        ],
+        [
+          [9, 2, 0],
+          [9, 3, 0],
+          [9, 2, 0],
+        ]
+      );
+      expect(playerField).toStrictEqual([
+        [h, h, h],
+        [h, 3, h],
+        [h, h, h],
+      ]);
+    });
+  });
+  describe('Open empty cell', () => {
+    it('Open empty cell, simple 3*3 case', () => {
+      const playerField = openCell(
+        [1, 2],
+        [
+          [h, h, h],
+          [h, h, h],
+          [h, h, h],
+        ],
+        [
+          [1, 1, 0],
+          [9, 1, 0],
+          [1, 1, 0],
+        ]
+      );
+      expect(playerField).toStrictEqual([
+        [h, 1, 0],
+        [h, 1, 0],
+        [h, 1, 0],
+      ]);
+    });
+    it('Open empty cell 5*5 case', () => {
+      const playerField = openCell(
+        [2, 2],
+        [
+          [h, h, h, h, h],
+          [h, h, h, h, h],
+          [h, h, h, h, h],
+          [h, h, h, h, h],
+          [h, h, h, h, h],
+        ],
+        [
+          [9, 9, 1, 1, 2],
+          [9, 3, 1, 0, 0],
+          [1, 1, 0, 1, 1],
+          [1, 0, 0, 1, 9],
+          [2, 1, 0, 1, 0],
+        ]
+      );
+      expect(playerField).toStrictEqual([
+        [h, h, 1, 1, 2],
+        [h, 3, 1, 0, 0],
+        [1, 1, 0, 1, 1],
+        [1, 0, 0, 1, h],
+        [2, 1, 0, 1, h],
+      ]);
+    });
+  });
+});
